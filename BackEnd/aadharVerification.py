@@ -1,21 +1,22 @@
 import re
+import os
 
-def aadhar_auth_img(image):
+def aadhar_auth_img(image_bytes):
     """
-    Validates Aadhar card from image using OCR
+    Validates Aadhar card from image bytes using OCR
     Returns: (is_valid, aadhar_number)
     """
     try:
         from google.cloud import vision
-        import os
-        import cv2
         
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', 'credentials.json')
+        # Use environment variable or fallback
+        creds_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', 'credentials.json')
+        if creds_path and os.path.exists(creds_path):
+            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = creds_path
+        
         client = vision.ImageAnnotatorClient()
-        success, encoded_image = cv2.imencode('.jpg', image)
-        img = encoded_image.tobytes()
-        img = vision.Image(content=img)
-        response = client.text_detection(image=img)
+        image = vision.Image(content=image_bytes)
+        response = client.text_detection(image=image)
         
         if not response.text_annotations:
             return False, ""

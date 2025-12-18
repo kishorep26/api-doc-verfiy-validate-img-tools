@@ -1,21 +1,22 @@
 import re
+import os
 
-def pan_auth_img(image):
+def pan_auth_img(image_bytes):
     """
-    Validates PAN card from image using OCR
+    Validates PAN card from image bytes using OCR
     Returns: (is_valid, pan_number)
     """
     try:
         from google.cloud import vision
-        import os
-        import cv2
         
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', 'credentials.json')
+        # Use environment variable or fallback
+        creds_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', 'credentials.json')
+        if creds_path and os.path.exists(creds_path):
+            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = creds_path
+        
         client = vision.ImageAnnotatorClient()
-        success, encoded_image = cv2.imencode('.jpg', image)
-        img = encoded_image.tobytes()
-        img = vision.Image(content=img)
-        response = client.text_detection(image=img)
+        image = vision.Image(content=image_bytes)
+        response = client.text_detection(image=image)
         
         if not response.text_annotations:
             return False, ""

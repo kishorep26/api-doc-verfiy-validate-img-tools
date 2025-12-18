@@ -1,14 +1,14 @@
 import re
 import sys
 import os
+from io import BytesIO
 
 # Add BackEnd directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'BackEnd'))
 
 from flask import Flask, render_template, Response, request, send_file
 from werkzeug.utils import secure_filename
-import cv2
-import numpy
+from PIL import Image
 
 # Import backend modules
 try:
@@ -48,10 +48,8 @@ def aadhar():
     try:
         if request.files and 'file' in request.files:   
             if request.files['file'].filename != "":
-                file = request.files['file'].read()
-                npimg = numpy.frombuffer(file, numpy.uint8)
-                img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
-                a, num = aadharVerification.aadhar_auth_img(img)
+                file_bytes = request.files['file'].read()
+                a, num = aadharVerification.aadhar_auth_img(file_bytes)
                 if a:
                     return Response(str({'number': str(num), 'valid': True}), status=200, mimetype='application/json')
                 else:
@@ -72,10 +70,8 @@ def pan():
     try:
         if request.files and 'file' in request.files:   
             if request.files['file'].filename != "":
-                file = request.files['file'].read()
-                npimg = numpy.frombuffer(file, numpy.uint8)
-                img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
-                a, num = panVerification.pan_auth_img(img)
+                file_bytes = request.files['file'].read()
+                a, num = panVerification.pan_auth_img(file_bytes)
                 if a:
                     return Response(str({'number': str(num), 'valid': True}), status=200, mimetype='application/json')
                 else:
@@ -96,16 +92,12 @@ def panresizeMAR():
     try:
         if request.files and 'file' in request.files:   
             if request.files['file'].filename != "":
-                file = request.files['file'].read()
-                npimg = numpy.frombuffer(file, numpy.uint8)
-                img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+                file_bytes = request.files['file'].read()
                 height = int(request.form.get('height', 0))
                 width = int(request.form.get('width', 0))
-                a = panResize.resize_pan_mar(img, height, width)
-                if a[0]:
-                    output_path = "/tmp/resized.jpeg"
-                    cv2.imwrite(output_path, a[1])
-                    return send_file(output_path, mimetype='image/jpeg') 
+                result_bytes = panResize.resize_pan_mar(file_bytes, height, width)
+                if result_bytes:
+                    return send_file(BytesIO(result_bytes), mimetype='image/jpeg', as_attachment=True, download_name='resized.jpeg')
                 else:
                     return "Inappropriate size", 400
     except Exception as e:
@@ -117,16 +109,12 @@ def panresizehard():
     try:
         if request.files and 'file' in request.files:   
             if request.files['file'].filename != "":
-                file = request.files['file'].read()
-                npimg = numpy.frombuffer(file, numpy.uint8)
-                img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+                file_bytes = request.files['file'].read()
                 height = int(request.form.get('height', 0))
                 width = int(request.form.get('width', 0))
-                a = panResize.resize_pan_hard(img, height=height, width=width)
-                if a[0]:
-                    output_path = "/tmp/resized.jpeg"
-                    cv2.imwrite(output_path, a[1])
-                    return send_file(output_path, mimetype='image/jpeg') 
+                result_bytes = panResize.resize_pan_hard(file_bytes, height=height, width=width)
+                if result_bytes:
+                    return send_file(BytesIO(result_bytes), mimetype='image/jpeg', as_attachment=True, download_name='resized.jpeg')
                 else:
                     return "Inappropriate size", 400
     except Exception as e:
@@ -138,16 +126,12 @@ def aadhar_resize_hard():
     try:
         if request.files and 'file' in request.files:   
             if request.files['file'].filename != "":
-                file = request.files['file'].read()
-                npimg = numpy.frombuffer(file, numpy.uint8)
-                img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+                file_bytes = request.files['file'].read()
                 height = int(request.form.get('height', 0))
                 width = int(request.form.get('width', 0))
-                a = aadharResize.resize_aadhar_hard(img, height=height, width=width)
-                if a[0]:
-                    output_path = "/tmp/resized.jpeg"
-                    cv2.imwrite(output_path, a[1])
-                    return send_file(output_path, mimetype='image/jpeg') 
+                result_bytes = aadharResize.resize_aadhar_hard(file_bytes, height=height, width=width)
+                if result_bytes:
+                    return send_file(BytesIO(result_bytes), mimetype='image/jpeg', as_attachment=True, download_name='resized.jpeg')
                 else:
                     return "Inappropriate size", 400
     except Exception as e:
@@ -159,16 +143,12 @@ def aadhar_resize_mar():
     try:
         if request.files and 'file' in request.files:   
             if request.files['file'].filename != "":
-                file = request.files['file'].read()
-                npimg = numpy.frombuffer(file, numpy.uint8)
-                img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+                file_bytes = request.files['file'].read()
                 height = int(request.form.get('height', 0))
                 width = int(request.form.get('width', 0))
-                a = aadharResize.resize_aadhar_mar(img, height=height, width=width)
-                if a[0]:
-                    output_path = "/tmp/resized.jpeg"
-                    cv2.imwrite(output_path, a[1])
-                    return send_file(output_path, mimetype='image/jpeg') 
+                result_bytes = aadharResize.resize_aadhar_mar(file_bytes, height=height, width=width)
+                if result_bytes:
+                    return send_file(BytesIO(result_bytes), mimetype='image/jpeg', as_attachment=True, download_name='resized.jpeg')
                 else:
                     return "Inappropriate size", 400
     except Exception as e:
@@ -180,12 +160,10 @@ def reduce():
     try:
         if request.files and 'file' in request.files:   
             if request.files['file'].filename != "":
-                file = request.files['file'].read()
-                npimg = numpy.frombuffer(file, numpy.uint8)
-                img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
-                a = reduceSize.reduce_storeage(img)
-                if a:
-                    return send_file("/tmp/reduced.jpeg", mimetype='image/jpeg') 
+                file_bytes = request.files['file'].read()
+                result_bytes = reduceSize.reduce_storage(file_bytes)
+                if result_bytes:
+                    return send_file(BytesIO(result_bytes), mimetype='image/jpeg', as_attachment=True, download_name='reduced.jpeg')
                 else:
                     return "Error reducing size", 500
     except Exception as e:
