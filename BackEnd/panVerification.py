@@ -1,17 +1,15 @@
 import re
 import os
-import requests
-from bs4 import BeautifulSoup
-import time
 
 def pan_auth_img(image_bytes):
     """
-    Validates PAN card from image using OCR
+    Extracts and validates PAN card from image using OCR
     1. Extracts text using Google Cloud Vision
     2. Verifies it's an actual PAN card (keywords check)
     3. Validates PAN number format
-    4. Validates number structure
-    Returns: (is_valid, pan_number, confidence_score)
+    
+    Note: Does NOT verify with Income Tax Department (requires name, DOB, OTP)
+    Returns: (is_valid_format, pan_number, confidence_score)
     """
     try:
         from google.cloud import vision
@@ -44,7 +42,7 @@ def pan_auth_img(image_bytes):
         
         keyword_matches = sum(1 for keyword in pan_keywords if keyword.upper() in full_text.upper())
         
-        if keyword_matches < 2:  # Need at least 2 keywords to be confident it's a PAN card
+        if keyword_matches < 2:
             return False, "", 0
         
         # Step 2: Extract PAN number
@@ -66,16 +64,12 @@ def pan_auth_img(image_bytes):
             return False, pan_number, 30
         
         # Step 4: Calculate confidence
-        confidence = 60  # Base confidence for valid format
-        confidence += min(keyword_matches * 10, 30)  # Up to 30 for keywords
-        if len(texts) > 6:  # Has sufficient text
+        confidence = 60
+        confidence += min(keyword_matches * 10, 30)
+        if len(texts) > 6:
             confidence += 10
         
-        # Step 5: Try to validate with Income Tax/NSDL (best effort)
-        # Note: Most PAN verification APIs require authentication
-        is_valid = True  # Assume valid if passes all checks
-        
-        return is_valid, pan_number, min(confidence, 100)
+        return True, pan_number, min(confidence, 100)
         
     except Exception as e:
         print(f"Error in pan_auth_img: {e}")
@@ -86,7 +80,10 @@ def pan_auth_img(image_bytes):
 def pan_auth_number(number):
     """
     Validates PAN card number format and structure
-    Returns: (is_valid, pan_number, confidence_score)
+    
+    Note: Does NOT verify with Income Tax Department (requires name, DOB, OTP)
+    This only validates the format is correct
+    Returns: (is_valid_format, pan_number, confidence_score)
     """
     try:
         clean_number = number.strip().upper().replace(" ", "").replace("-", "")
@@ -101,10 +98,7 @@ def pan_auth_number(number):
         if not _validate_pan_structure(clean_number):
             return False, clean_number, 30
         
-        # Try to validate with NSDL/Income Tax website
-        # Note: This requires handling CAPTCHAs and may not work reliably
-        # For production, you'd need official API access
-        
+        # Format is valid (but not verified with IT Department)
         return True, clean_number, 85
         
     except Exception as e:
@@ -153,9 +147,6 @@ def _validate_pan_structure(pan):
         if not pan[9].isalpha():
             return False
         
-        # Additional validation: 5th character should be first letter of name
-        # (Can't validate without name, but structure is correct)
-        
         return True
     except:
         return False
@@ -180,39 +171,3 @@ def get_pan_holder_type(pan):
     if len(pan) >= 4:
         return types.get(pan[3], 'Unknown')
     return 'Unknown'
-
-def _validate_pan_with_nsdl(pan):
-    """
-    Attempts to validate PAN with NSDL website
-    Note: This is for reference only. In production:
-    1. NSDL requires CAPTCHA solving
-    2. Rate limiting applies
-    3. Official API access is recommended
-    
-    This function is disabled by default as it won't work without CAPTCHA handling
-    """
-    # NSDL PAN verification URL (requires CAPTCHA)
-    # url = "https://tin.tin.nsdl.com/pantan/StatusTrack.html"
-    
-    # For production, you would need:
-    # 1. CAPTCHA solving service (2captcha, Anti-Captcha, etc.)
-    # 2. Proper session handling
-    # 3. Rate limiting
-    
-    # Placeholder - would need actual implementation with CAPTCHA handling
-    return False
-
-def _validate_pan_with_income_tax(pan):
-    """
-    Attempts to validate PAN with Income Tax Department
-    Note: Similar limitations as NSDL
-    
-    Official verification requires:
-    1. Login to e-Filing portal
-    2. Or use of official APIs (requires registration)
-    """
-    # Income Tax e-Filing portal
-    # url = "https://www.incometax.gov.in/iec/foportal/"
-    
-    # Placeholder - would need authentication
-    return False
