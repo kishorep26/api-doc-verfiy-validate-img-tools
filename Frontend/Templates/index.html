@@ -1,39 +1,274 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-<title>Upload Documents</title>
-</head>
-<!-- <link rel="stylesheet" href="style_1.css"> -->
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Verification & Resize API</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: sans-serif;
-     background-color: #eeeeee;
-      }
-    .center {
-      margin: 0;
-      position: absolute;
-      top: 30%;
-      left: 30%;
-      -ms-transform: translate(-50%, -50%);
-      transform: translate(-50%, -50%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
-    .cont {
-      margin: 0;
-      position: absolute;
-      top:30%;
-      right:10%;
-      -ms-transform: translate(-50%, -50%);
-      transform: translate(-50%, -50%);
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
     }
-</style>
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 50px 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 15px;
+    }
+
+    .header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 50px 30px;
+    }
+
+    .services {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .service-card {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      border-radius: 15px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.3s;
+      cursor: pointer;
+      text-decoration: none;
+      color: #333;
+    }
+
+    .service-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .service-card.aadhar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .service-card.pan {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+    }
+
+    .service-card.resize {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+    }
+
+    .service-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+    }
+
+    .service-card h2 {
+      font-size: 1.8em;
+      margin-bottom: 15px;
+    }
+
+    .service-card p {
+      font-size: 1em;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+
+    .service-card .features {
+      list-style: none;
+      text-align: left;
+      margin-top: 20px;
+    }
+
+    .service-card .features li {
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .service-card .features li:last-child {
+      border-bottom: none;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 30px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .footer {
+      text-align: center;
+      padding: 30px;
+      background: #f5f7fa;
+      color: #666;
+    }
+
+    .features-section {
+      background: #f5f7fa;
+      padding: 40px 30px;
+      margin: 40px -30px -50px -30px;
+    }
+
+    .features-section h3 {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .feature-item {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .feature-item .icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .feature-item h4 {
+      margin-bottom: 10px;
+      color: #667eea;
+    }
+  </style>
+</head>
+
 <body>
-    <center><h1>WELCOME TO DOCUMENT VERIFICATION</h1></center>
-    <div class="cont">
-        <img src="/static/images/2.jpg" width="400" height="200">
-        <br><br><center><a href="/aadhar"><input type="button" value="Aadhar Card Verification"></a></center>
+  <div class="container">
+    <div class="header">
+      <h1>📄 Document Verification & Resize API</h1>
+      <p>Verify Indian government documents and resize images with OCR technology</p>
     </div>
-    <div class="center">
-        <img src="/static/images/1.png" width="400" height="200"><br>
-        <br><br><center><a href="/pan"><input type="button" value="Pan Card Verification"></a></center>
+
+    <div class="content">
+      <div class="services">
+        <a href="/aadhar" class="service-card aadhar">
+          <div class="service-icon">🆔</div>
+          <h2>Aadhar Card</h2>
+          <p>Verify and resize Aadhar card images</p>
+          <ul class="features">
+            <li>✓ OCR Text Extraction</li>
+            <li>✓ Number Validation</li>
+            <li>✓ Document Authenticity Check</li>
+            <li>✓ Image Resizing</li>
+          </ul>
+          <div style="margin-top: 20px;">
+            <span class="btn">Verify Aadhar →</span>
+          </div>
+        </a>
+
+        <a href="/pan" class="service-card pan">
+          <div class="service-icon">💳</div>
+          <h2>PAN Card</h2>
+          <p>Verify and resize PAN card images</p>
+          <ul class="features">
+            <li>✓ OCR Text Extraction</li>
+            <li>✓ Number Validation</li>
+            <li>✓ Holder Type Detection</li>
+            <li>✓ Image Resizing</li>
+          </ul>
+          <div style="margin-top: 20px;">
+            <span class="btn">Verify PAN →</span>
+          </div>
+        </a>
+
+        <a href="/resize" class="service-card resize">
+          <div class="service-icon">🖼️</div>
+          <h2>Image Resize</h2>
+          <p>Resize any image or reduce file size</p>
+          <ul class="features">
+            <li>✓ Maintain Aspect Ratio</li>
+            <li>✓ Hard Resize Option</li>
+            <li>✓ File Size Reduction</li>
+            <li>✓ Quality Optimization</li>
+          </ul>
+          <div style="margin-top: 20px;">
+            <span class="btn">Resize Image →</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="features-section">
+        <h3>🚀 Key Features</h3>
+        <div class="features-grid">
+          <div class="feature-item">
+            <div class="icon">🔍</div>
+            <h4>OCR Technology</h4>
+            <p>Google Cloud Vision API for accurate text extraction</p>
+          </div>
+          <div class="feature-item">
+            <div class="icon">✅</div>
+            <h4>Validation</h4>
+            <p>Verhoeff algorithm for Aadhar, structure validation for PAN</p>
+          </div>
+          <div class="feature-item">
+            <div class="icon">🎯</div>
+            <h4>Authenticity Check</h4>
+            <p>Keyword detection to verify genuine documents</p>
+          </div>
+          <div class="feature-item">
+            <div class="icon">📐</div>
+            <h4>Smart Resizing</h4>
+            <p>Maintain quality while resizing to required dimensions</p>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <div class="footer">
+      <p>&copy; 2024 Document Verification API | Built with Flask & Google Cloud Vision</p>
+    </div>
+  </div>
 </body>
+
 </html>

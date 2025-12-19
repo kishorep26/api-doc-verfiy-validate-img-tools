@@ -44,23 +44,44 @@ def aadhar_page():
 def pan_page():
     return render_template("pan.html")
 
+@app.route("/resize")
+def resize_page():
+    return render_template("resize.html")
+
+
 @app.route("/aadharVerification", methods=['POST', 'GET'])
 def aadhar():
     try:
         if request.files and 'file' in request.files:   
             if request.files['file'].filename != "":
                 file_bytes = request.files['file'].read()
-                a, num = aadharVerification.aadhar_auth_img(file_bytes)
-                return jsonify({'number': str(num), 'valid': bool(a)})
+                is_valid, num, confidence = aadharVerification.aadhar_auth_img(file_bytes)
+                return jsonify({
+                    'valid': bool(is_valid),
+                    'number': str(num),
+                    'confidence': int(confidence),
+                    'message': 'Aadhar card verified successfully' if is_valid else 'Invalid or unreadable Aadhar card'
+                })
         else:
             number = request.form.get("number", "")
-            a, num = aadharVerification.aadhar_auth_number(number)
-            return jsonify({'number': str(num), 'valid': bool(a)})
+            is_valid, num, confidence = aadharVerification.aadhar_auth_number(number)
+            return jsonify({
+                'valid': bool(is_valid),
+                'number': str(num),
+                'confidence': int(confidence),
+                'message': 'Valid Aadhar number' if is_valid else 'Invalid Aadhar number format'
+            })
     except Exception as e:
         print(f"Error in aadhar verification: {e}")
         import traceback
         traceback.print_exc()
-        return jsonify({'number': '', 'valid': False, 'error': str(e)}), 403
+        return jsonify({
+            'valid': False,
+            'number': '',
+            'confidence': 0,
+            'error': str(e),
+            'message': 'Error processing Aadhar verification'
+        }), 403
 
 @app.route("/panVerification", methods=['POST', 'GET'])
 def pan():
@@ -68,17 +89,37 @@ def pan():
         if request.files and 'file' in request.files:   
             if request.files['file'].filename != "":
                 file_bytes = request.files['file'].read()
-                a, num = panVerification.pan_auth_img(file_bytes)
-                return jsonify({'number': str(num), 'valid': bool(a)})
+                is_valid, num, confidence = panVerification.pan_auth_img(file_bytes)
+                holder_type = panVerification.get_pan_holder_type(num) if num else ''
+                return jsonify({
+                    'valid': bool(is_valid),
+                    'number': str(num),
+                    'confidence': int(confidence),
+                    'holder_type': holder_type,
+                    'message': 'PAN card verified successfully' if is_valid else 'Invalid or unreadable PAN card'
+                })
         else:
             number = request.form.get("number", "")
-            a, num = panVerification.pan_auth_number(number)
-            return jsonify({'number': str(num), 'valid': bool(a)})
+            is_valid, num, confidence = panVerification.pan_auth_number(number)
+            holder_type = panVerification.get_pan_holder_type(num) if num else ''
+            return jsonify({
+                'valid': bool(is_valid),
+                'number': str(num),
+                'confidence': int(confidence),
+                'holder_type': holder_type,
+                'message': 'Valid PAN number' if is_valid else 'Invalid PAN number format'
+            })
     except Exception as e:
         print(f"Error in PAN verification: {e}")
         import traceback
         traceback.print_exc()
-        return jsonify({'number': '', 'valid': False, 'error': str(e)}), 400
+        return jsonify({
+            'valid': False,
+            'number': '',
+            'confidence': 0,
+            'error': str(e),
+            'message': 'Error processing PAN verification'
+        }), 400
 
 @app.route("/panResizeMAR", methods=["POST", "GET"])
 def panresizeMAR():
@@ -161,6 +202,61 @@ def reduce():
                     return "Error reducing size", 500
     except Exception as e:
         print(f"Error in reduce size: {e}")
+        return f"Error: {str(e)}", 500
+
+# General image resize endpoints (for any image)
+@app.route("/resizeMAR", methods=["POST", "GET"])
+def resize_mar():
+    """General image resize maintaining aspect ratio"""
+    try:
+        if request.files and 'file' in request.files:   
+            if request.files['file'].filename != "":
+                file_bytes = request.files['file'].read()
+                height = int(request.form.get('height', 0))
+                width = int(request.form.get('width', 0))
+                
+                # Use Pillow to resize
+                from PIL import Image
+                img = Image.open(BytesIO(file_bytes))
+                
+                # Calculate height maintaining aspect ratio
+                aspect_ratio = img.height / img.width
+                new_height = int(width * aspect_ratio)
+                
+                resized = img.resize((width, new_height), Image.Resampling.LANCZOS)
+                
+                output = BytesIO()
+                resized.save(output, format='JPEG', quality=95)
+                result_bytes = output.getvalue()
+                
+                return send_file(BytesIO(result_bytes), mimetype='image/jpeg', as_attachment=True, download_name='resized.jpeg')
+    except Exception as e:
+        print(f"Error in general resize MAR: {e}")
+        return f"Error: {str(e)}", 500
+
+@app.route("/resizeHard", methods=["POST", "GET"])
+def resize_hard():
+    """General image hard resize to exact dimensions"""
+    try:
+        if request.files and 'file' in request.files:   
+            if request.files['file'].filename != "":
+                file_bytes = request.files['file'].read()
+                height = int(request.form.get('height', 0))
+                width = int(request.form.get('width', 0))
+                
+                # Use Pillow to resize
+                from PIL import Image
+                img = Image.open(BytesIO(file_bytes))
+                
+                resized = img.resize((width, height), Image.Resampling.LANCZOS)
+                
+                output = BytesIO()
+                resized.save(output, format='JPEG', quality=95)
+                result_bytes = output.getvalue()
+                
+                return send_file(BytesIO(result_bytes), mimetype='image/jpeg', as_attachment=True, download_name='resized.jpeg')
+    except Exception as e:
+        print(f"Error in general resize hard: {e}")
         return f"Error: {str(e)}", 500
 
 # Health check endpoint for Vercel

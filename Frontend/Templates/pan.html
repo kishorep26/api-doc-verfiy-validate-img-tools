@@ -1,85 +1,385 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Upload PAN card</title>
-    <link rel="stylesheet" href="/static/css/aadhar.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAN Card Verification & Resize</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #f5576c;
+            border-bottom-color: #f5576c;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .upload-area {
+            border: 3px dashed #f5576c;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            background: #fff5f7;
+            border-color: #f093fb;
+        }
+
+        .upload-area input[type="file"] {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            margin: 20px 0;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #f5576c;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .result.success {
+            background: #d4edda;
+            border: 2px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            border: 2px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .result.info {
+            background: #d1ecf1;
+            border: 2px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .result-title {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .result-details {
+            margin-top: 10px;
+        }
+
+        .result-details div {
+            margin: 5px 0;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+            transition: width 0.5s;
+        }
+
+        .resize-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #f5576c;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body>
-    <center>
-        <h1>UPLOAD PAN CARD IMAGE</h1>
-    </center>
+    <div class="container">
+        <div class="header">
+            <h1>💳 PAN Card Verification</h1>
+            <p>Verify and resize PAN card images with OCR technology</p>
+        </div>
 
-    <div class="cont">
-        <img src="/static/images/1.png" width="400" height="200">
+        <div class="content">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('verify')">Verify PAN</button>
+                <button class="tab" onclick="switchTab('resize')">Resize Image</button>
+            </div>
+
+            <!-- Verify Tab -->
+            <div id="verify-tab" class="tab-content active">
+                <h3>Upload PAN Card Image</h3>
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">📤</div>
+                    <p>Click to upload or drag and drop</p>
+                    <p style="font-size: 14px; color: #999; margin-top: 5px;">Supports: JPG, PNG (Max 16MB)</p>
+                    <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
+                </div>
+                <img id="previewImage" class="preview-image" alt="Preview">
+
+                <button class="btn btn-primary" onclick="verifyPAN()">🔍 Verify PAN Card</button>
+
+                <div style="text-align: center; margin: 30px 0; color: #999;">
+                    <p>OR</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="panNumber">Enter PAN Number</label>
+                    <input type="text" id="panNumber" placeholder="ABCDE1234F" maxlength="10"
+                        style="text-transform: uppercase;">
+                </div>
+                <button class="btn btn-primary" onclick="verifyPANNumber()">✓ Verify Number</button>
+
+                <div id="result" class="result"></div>
+            </div>
+
+            <!-- Resize Tab -->
+            <div id="resize-tab" class="tab-content">
+                <h3>Resize PAN Card Image</h3>
+                <div class="upload-area" onclick="document.getElementById('resizeFileInput').click()">
+                    <div class="upload-icon">📤</div>
+                    <p>Click to upload image to resize</p>
+                    <input type="file" id="resizeFileInput" accept="image/*" onchange="handleResizeFileSelect(event)">
+                </div>
+                <img id="resizePreviewImage" class="preview-image" alt="Preview">
+
+                <div class="form-group">
+                    <label for="resizeType">Resize Method</label>
+                    <select id="resizeType">
+                        <option value="MAR">Maintain Aspect Ratio</option>
+                        <option value="Hard">Hard Resize (Exact Dimensions)</option>
+                    </select>
+                </div>
+
+                <div class="resize-options">
+                    <div class="form-group">
+                        <label for="width">Width (px)</label>
+                        <input type="number" id="width" placeholder="e.g., 800">
+                    </div>
+                    <div class="form-group">
+                        <label for="height">Height (px)</label>
+                        <input type="number" id="height" placeholder="e.g., 600">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="resizePAN()">📐 Resize & Download</button>
+
+                <div id="resizeResult" class="result"></div>
+            </div>
+
+            <a href="/" class="back-link">← Back to Home</a>
+        </div>
     </div>
 
-    <div class="center">
-        <!-- Image Upload Section -->
-        <div class="image-upload-wrap">
-            <input id="fileInput" name="file" class="file-upload-input" type="file" onchange="readURL(this);"
-                accept="image/*" />
-            <div class="drag-text">
-                <h3>Drag and drop Image or click to select Image</h3>
-            </div>
-        </div>
-
-        <div class="file-upload-content">
-            <img class="file-upload-image" src="#" alt="your image" />
-            <div class="image-title-wrap">
-                <button type="button" onclick="removeUpload()" class="remove-image">
-                    Remove <span class="image-title">Uploaded PAN Card Image</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Verification Options -->
-        <h3>VERIFICATION OPTIONS:</h3>
-        <button onclick="verifyPAN()" class="file-upload-btn">Verify PAN Card</button>
-        <br><br>
-
-        <!-- Resize Section -->
-        <h3>RESIZE YOUR IMAGE HERE:</h3>
-        <label>Select a choice</label>
-        <select id="resizeType">
-            <option value="MAR">Maintain Aspect Ratio</option>
-            <option value="Hard">Hard Resizing</option>
-        </select>
-        <center>
-            <h4>Width</h4><input type="number" id="width" placeholder="Enter width"> px
-            <h4>Height</h4><input type="number" id="height" placeholder="Enter height"> px
-            <br><br>
-            <button onclick="resizePAN()" class="file-upload-btn">Resize Image</button>
-        </center>
-
-        <!-- OR Number Entry -->
-        <div class="file-upload">
-            <h2>OR ENTER PAN CARD NUMBER</h2>
-            <input type="text" id="panNumber" placeholder="ABCDE1234F" style="text-transform: uppercase;">
-            <br><br>
-            <button onclick="verifyPANNumber()" class="file-upload-btn">Verify Number</button>
-        </div>
-
-        <!-- Result Display -->
-        <div id="result" style="margin-top: 20px; padding: 15px; display: none; border-radius: 5px;"></div>
-    </div>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="/static/js/aadhar.js"></script>
     <script>
-        // Verify PAN from image
+        let uploadedFile = null;
+        let resizeFile = null;
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            if (tab === 'verify') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('verify-tab').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('resize-tab').classList.add('active');
+            }
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                uploadedFile = file;
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('previewImage').src = e.target.result;
+                    document.getElementById('previewImage').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleResizeFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                resizeFile = file;
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('resizePreviewImage').src = e.target.result;
+                    document.getElementById('resizePreviewImage').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
         function verifyPAN() {
-            const fileInput = document.getElementById('fileInput');
-            if (!fileInput.files || !fileInput.files[0]) {
-                showResult('Please upload an image first!', false);
+            if (!uploadedFile) {
+                showResult('Please upload a PAN card image first!', 'error');
                 return;
             }
 
             const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
+            formData.append('file', uploadedFile);
 
-            showResult('Verifying...', null);
+            showResult('Verifying PAN card... Please wait.', 'info');
 
             fetch('/panVerification', {
                 method: 'POST',
@@ -88,29 +388,40 @@
                 .then(response => response.json())
                 .then(result => {
                     if (result.valid) {
-                        showResult(`✓ Valid PAN Card! Number: ${result.number}`, true);
+                        const details = `
+                        <div class="result-title">✓ Valid PAN Card!</div>
+                        <div class="result-details">
+                            <div><strong>PAN Number:</strong> ${result.number}</div>
+                            <div><strong>Holder Type:</strong> ${result.holder_type || 'N/A'}</div>
+                            <div><strong>Confidence:</strong> ${result.confidence}%</div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: ${result.confidence}%"></div>
+                            </div>
+                            <div style="margin-top: 10px;"><em>${result.message}</em></div>
+                        </div>
+                    `;
+                        showResult(details, 'success', true);
                     } else {
-                        showResult('✗ Invalid PAN Card or could not extract number', false);
+                        showResult(`✗ ${result.message || 'Invalid PAN card'}`, 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showResult('Error: ' + error.message, false);
+                    showResult('Error: ' + error.message, 'error');
                 });
         }
 
-        // Verify PAN number
         function verifyPANNumber() {
-            const number = document.getElementById('panNumber').value.toUpperCase();
+            const number = document.getElementById('panNumber').value.trim().toUpperCase();
             if (!number) {
-                showResult('Please enter a PAN number!', false);
+                showResult('Please enter a PAN number!', 'error');
                 return;
             }
 
             const formData = new FormData();
             formData.append('number', number);
 
-            showResult('Verifying...', null);
+            showResult('Verifying PAN number...', 'info');
 
             fetch('/panVerification', {
                 method: 'POST',
@@ -119,42 +430,52 @@
                 .then(response => response.json())
                 .then(result => {
                     if (result.valid) {
-                        showResult(`✓ Valid PAN Number! ${result.number}`, true);
+                        const details = `
+                        <div class="result-title">✓ Valid PAN Number!</div>
+                        <div class="result-details">
+                            <div><strong>PAN Number:</strong> ${result.number}</div>
+                            <div><strong>Holder Type:</strong> ${result.holder_type || 'N/A'}</div>
+                            <div><strong>Confidence:</strong> ${result.confidence}%</div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: ${result.confidence}%"></div>
+                            </div>
+                            <div style="margin-top: 10px;"><em>${result.message}</em></div>
+                        </div>
+                    `;
+                        showResult(details, 'success', true);
                     } else {
-                        showResult('✗ Invalid PAN Number format', false);
+                        showResult(`✗ ${result.message || 'Invalid PAN number format'}`, 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showResult('Error: ' + error.message, false);
+                    showResult('Error: ' + error.message, 'error');
                 });
         }
 
-        // Resize PAN
         function resizePAN() {
-            const fileInput = document.getElementById('fileInput');
-            const width = document.getElementById('width').value;
-            const height = document.getElementById('height').value;
-            const resizeType = document.getElementById('resizeType').value;
-
-            if (!fileInput.files || !fileInput.files[0]) {
-                showResult('Please upload an image first!', false);
+            if (!resizeFile) {
+                showResult('Please upload an image to resize!', 'error', false, 'resizeResult');
                 return;
             }
 
+            const width = document.getElementById('width').value;
+            const height = document.getElementById('height').value;
+
             if (!width || !height) {
-                showResult('Please enter both width and height!', false);
+                showResult('Please enter both width and height!', 'error', false, 'resizeResult');
                 return;
             }
 
             const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
+            formData.append('file', resizeFile);
             formData.append('width', width);
             formData.append('height', height);
 
+            const resizeType = document.getElementById('resizeType').value;
             const endpoint = resizeType === 'MAR' ? '/panResizeMAR' : '/panResizeHard';
 
-            showResult('Resizing...', null);
+            showResult('Resizing image...', 'info', false, 'resizeResult');
 
             fetch(endpoint, {
                 method: 'POST',
@@ -175,33 +496,29 @@
                     document.body.appendChild(a);
                     a.click();
                     window.URL.revokeObjectURL(url);
-                    showResult('✓ Image resized and downloaded successfully!', true);
+                    showResult('✓ Image resized and downloaded successfully!', 'success', false, 'resizeResult');
                 })
                 .catch(error => {
-                    showResult('Error: ' + error.message, false);
+                    console.error('Error:', error);
+                    showResult('Error: ' + error.message, 'error', false, 'resizeResult');
                 });
         }
 
-        // Show result message
-        function showResult(message, success) {
-            const resultDiv = document.getElementById('result');
-            resultDiv.textContent = message;
-            resultDiv.style.display = 'block';
-
-            if (success === true) {
-                resultDiv.style.backgroundColor = '#d4edda';
-                resultDiv.style.color = '#155724';
-                resultDiv.style.border = '1px solid #c3e6cb';
-            } else if (success === false) {
-                resultDiv.style.backgroundColor = '#f8d7da';
-                resultDiv.style.color = '#721c24';
-                resultDiv.style.border = '1px solid #f5c6cb';
+        function showResult(message, type, isHTML = false, elementId = 'result') {
+            const resultDiv = document.getElementById(elementId);
+            if (isHTML) {
+                resultDiv.innerHTML = message;
             } else {
-                resultDiv.style.backgroundColor = '#d1ecf1';
-                resultDiv.style.color = '#0c5460';
-                resultDiv.style.border = '1px solid #bee5eb';
+                resultDiv.textContent = message;
             }
+            resultDiv.className = `result ${type}`;
+            resultDiv.style.display = 'block';
         }
+
+        // Auto-uppercase PAN input
+        document.getElementById('panNumber').addEventListener('input', function (e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
     </script>
 </body>
 

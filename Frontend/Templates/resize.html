@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Resize & Compression</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #4facfe;
+            border-bottom-color: #4facfe;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .upload-area {
+            border: 3px dashed #4facfe;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            background: #f0fbff;
+            border-color: #00f2fe;
+        }
+
+        .upload-area input[type="file"] {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            margin: 20px 0;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .result.success {
+            background: #d4edda;
+            border: 2px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            border: 2px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .result.info {
+            background: #d1ecf1;
+            border: 2px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .resize-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-box {
+            background: #f0fbff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #4facfe;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .image-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .image-info div {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖼️ Image Resize & Compression</h1>
+            <p>Resize any image or reduce file size while maintaining quality</p>
+        </div>
+
+        <div class="content">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('resize')">Resize Image</button>
+                <button class="tab" onclick="switchTab('compress')">Reduce File Size</button>
+            </div>
+
+            <!-- Resize Tab -->
+            <div id="resize-tab" class="tab-content active">
+                <div class="info-box">
+                    <strong>📐 Resize Options:</strong>
+                    <ul style="margin-top: 10px; margin-left: 20px;">
+                        <li><strong>Maintain Aspect Ratio:</strong> Keeps proportions, adjusts height automatically</li>
+                        <li><strong>Hard Resize:</strong> Exact dimensions, may distort image</li>
+                    </ul>
+                </div>
+
+                <div class="upload-area" onclick="document.getElementById('resizeFileInput').click()">
+                    <div class="upload-icon">📤</div>
+                    <p>Click to upload any image</p>
+                    <p style="font-size: 14px; color: #999; margin-top: 5px;">Supports: JPG, PNG, JPEG (Max 16MB)</p>
+                    <input type="file" id="resizeFileInput" accept="image/*" onchange="handleResizeFileSelect(event)">
+                </div>
+                <img id="resizePreviewImage" class="preview-image" alt="Preview">
+                <div id="resizeImageInfo" class="image-info"></div>
+
+                <div class="form-group">
+                    <label for="resizeType">Resize Method</label>
+                    <select id="resizeType">
+                        <option value="MAR">Maintain Aspect Ratio</option>
+                        <option value="Hard">Hard Resize (Exact Dimensions)</option>
+                    </select>
+                </div>
+
+                <div class="resize-options">
+                    <div class="form-group">
+                        <label for="resizeWidth">Width (px)</label>
+                        <input type="number" id="resizeWidth" placeholder="e.g., 800">
+                    </div>
+                    <div class="form-group">
+                        <label for="resizeHeight">Height (px)</label>
+                        <input type="number" id="resizeHeight" placeholder="e.g., 600">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="resizeImage()">📐 Resize & Download</button>
+
+                <div id="resizeResult" class="result"></div>
+            </div>
+
+            <!-- Compress Tab -->
+            <div id="compress-tab" class="tab-content">
+                <div class="info-box">
+                    <strong>🗜️ File Size Reduction:</strong>
+                    <p style="margin-top: 10px;">Automatically reduces file size while maintaining readability and
+                        quality. Perfect for web uploads and email attachments.</p>
+                </div>
+
+                <div class="upload-area" onclick="document.getElementById('compressFileInput').click()">
+                    <div class="upload-icon">📤</div>
+                    <p>Click to upload image to compress</p>
+                    <p style="font-size: 14px; color: #999; margin-top: 5px;">Supports: JPG, PNG, JPEG (Max 16MB)</p>
+                    <input type="file" id="compressFileInput" accept="image/*"
+                        onchange="handleCompressFileSelect(event)">
+                </div>
+                <img id="compressPreviewImage" class="preview-image" alt="Preview">
+                <div id="compressImageInfo" class="image-info"></div>
+
+                <button class="btn btn-primary" onclick="compressImage()">🗜️ Reduce Size & Download</button>
+
+                <div id="compressResult" class="result"></div>
+            </div>
+
+            <a href="/" class="back-link">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        let resizeFile = null;
+        let compressFile = null;
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            if (tab === 'resize') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('resize-tab').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('compress-tab').classList.add('active');
+            }
+        }
+
+        function handleResizeFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                resizeFile = file;
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = new Image();
+                    img.onload = function () {
+                        document.getElementById('resizePreviewImage').src = e.target.result;
+                        document.getElementById('resizePreviewImage').style.display = 'block';
+
+                        const infoDiv = document.getElementById('resizeImageInfo');
+                        infoDiv.innerHTML = `
+                            <div><strong>Original Dimensions:</strong> ${img.width} × ${img.height} px</div>
+                            <div><strong>File Size:</strong> ${(file.size / 1024).toFixed(2)} KB</div>
+                        `;
+                        infoDiv.style.display = 'block';
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleCompressFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                compressFile = file;
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = new Image();
+                    img.onload = function () {
+                        document.getElementById('compressPreviewImage').src = e.target.result;
+                        document.getElementById('compressPreviewImage').style.display = 'block';
+
+                        const infoDiv = document.getElementById('compressImageInfo');
+                        infoDiv.innerHTML = `
+                            <div><strong>Dimensions:</strong> ${img.width} × ${img.height} px</div>
+                            <div><strong>Current Size:</strong> ${(file.size / 1024).toFixed(2)} KB</div>
+                        `;
+                        infoDiv.style.display = 'block';
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function resizeImage() {
+            if (!resizeFile) {
+                showResult('Please upload an image first!', 'error', 'resizeResult');
+                return;
+            }
+
+            const width = document.getElementById('resizeWidth').value;
+            const height = document.getElementById('resizeHeight').value;
+
+            if (!width || !height) {
+                showResult('Please enter both width and height!', 'error', 'resizeResult');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', resizeFile);
+            formData.append('width', width);
+            formData.append('height', height);
+
+            const resizeType = document.getElementById('resizeType').value;
+            // Use general resize endpoint (we'll create this)
+            const endpoint = resizeType === 'MAR' ? '/resizeMAR' : '/resizeHard';
+
+            showResult('Resizing image...', 'info', 'resizeResult');
+
+            fetch(endpoint, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.blob();
+                    } else {
+                        throw new Error('Resize failed');
+                    }
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'resized_image.jpeg';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    showResult('✓ Image resized and downloaded successfully!', 'success', 'resizeResult');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showResult('Error: ' + error.message, 'error', 'resizeResult');
+                });
+        }
+
+        function compressImage() {
+            if (!compressFile) {
+                showResult('Please upload an image first!', 'error', 'compressResult');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', compressFile);
+
+            showResult('Compressing image...', 'info', 'compressResult');
+
+            fetch('/reduceSize', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.blob();
+                    } else {
+                        throw new Error('Compression failed');
+                    }
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'compressed_image.jpeg';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+
+                    const originalSize = (compressFile.size / 1024).toFixed(2);
+                    const newSize = (blob.size / 1024).toFixed(2);
+                    const reduction = ((1 - blob.size / compressFile.size) * 100).toFixed(1);
+
+                    showResult(`✓ Image compressed successfully!<br>Original: ${originalSize} KB → New: ${newSize} KB (${reduction}% reduction)`, 'success', 'compressResult', true);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showResult('Error: ' + error.message, 'error', 'compressResult');
+                });
+        }
+
+        function showResult(message, type, elementId, isHTML = false) {
+            const resultDiv = document.getElementById(elementId);
+            if (isHTML) {
+                resultDiv.innerHTML = message;
+            } else {
+                resultDiv.textContent = message;
+            }
+            resultDiv.className = `result ${type}`;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>
