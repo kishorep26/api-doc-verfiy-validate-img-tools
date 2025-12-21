@@ -4,8 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document Verification & Image Processing</title>
+  <title>API for Document Validation & Image Tools</title>
   <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     * {
       margin: 0;
@@ -14,265 +18,397 @@
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8f9fa;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      color: #1a1a1a;
     }
 
     .container {
       max-width: 1200px;
       width: 100%;
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      overflow: hidden;
+      margin: 0 auto;
     }
 
     .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 50px 30px;
-      text-align: center;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 40px 30px;
     }
 
-    .header h1 {
-      font-size: 2.5em;
-      margin-bottom: 15px;
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .logo h1 {
+      font-size: 1.75em;
+      font-weight: 700;
+      color: #1a1a1a;
+      letter-spacing: -0.02em;
     }
 
     .header p {
-      font-size: 1.1em;
-      opacity: 0.9;
+      font-size: 1.05em;
+      color: #6b7280;
+      font-weight: 400;
+      margin-left: 52px;
     }
 
     .content {
-      padding: 50px 30px;
+      padding: 60px 30px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .services {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-      margin-bottom: 40px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 60px;
     }
 
     .service-card {
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      border-radius: 15px;
-      padding: 30px;
-      text-align: center;
-      transition: all 0.3s;
-      cursor: pointer;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 32px;
       text-decoration: none;
-      color: #333;
+      color: #1a1a1a;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
     }
 
     .service-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+      border-color: #d1d5db;
     }
 
-    .service-card.aadhar {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-
-    .service-card.pan {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      color: white;
-    }
-
-    .service-card.resize {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      color: white;
+    .service-card:hover::before {
+      transform: scaleX(1);
     }
 
     .service-icon {
-      font-size: 60px;
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin-bottom: 20px;
+      background: #f3f4f6;
+      color: #667eea;
+    }
+
+    .service-card.aadhar .service-icon {
+      background: #ede9fe;
+      color: #7c3aed;
+    }
+
+    .service-card.pan .service-icon {
+      background: #fce7f3;
+      color: #ec4899;
+    }
+
+    .service-card.resize .service-icon {
+      background: #dbeafe;
+      color: #3b82f6;
     }
 
     .service-card h2 {
-      font-size: 1.8em;
-      margin-bottom: 15px;
+      font-size: 1.5em;
+      margin-bottom: 12px;
+      font-weight: 600;
+      color: #1a1a1a;
     }
 
     .service-card p {
-      font-size: 1em;
-      opacity: 0.9;
-      margin-bottom: 20px;
+      font-size: 0.95em;
+      color: #6b7280;
+      margin-bottom: 24px;
+      line-height: 1.6;
     }
 
     .service-card .features {
       list-style: none;
-      text-align: left;
-      margin-top: 20px;
+      margin-bottom: 24px;
     }
 
     .service-card .features li {
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 10px 0;
+      font-size: 0.9em;
+      color: #4b5563;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #f3f4f6;
     }
 
     .service-card .features li:last-child {
       border-bottom: none;
     }
 
+    .service-card .features li::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #667eea;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
     .btn {
-      display: inline-block;
-      padding: 12px 30px;
-      background: rgba(255, 255, 255, 0.2);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: #1a1a1a;
       color: white;
       border-radius: 8px;
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 500;
+      font-size: 0.95em;
       transition: all 0.3s;
-      border: 2px solid rgba(255, 255, 255, 0.3);
+      border: none;
     }
 
     .btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-      border-color: rgba(255, 255, 255, 0.5);
-    }
-
-    .footer {
-      text-align: center;
-      padding: 30px;
-      background: #f5f7fa;
-      color: #666;
+      background: #374151;
+      transform: translateX(4px);
     }
 
     .features-section {
-      background: #f5f7fa;
-      padding: 40px 30px;
-      margin: 40px -30px -50px -30px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 48px 32px;
+      margin-top: 40px;
     }
 
     .features-section h3 {
       text-align: center;
-      font-size: 2em;
-      margin-bottom: 30px;
-      color: #333;
+      font-size: 1.75em;
+      margin-bottom: 40px;
+      color: #1a1a1a;
+      font-weight: 600;
     }
 
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 32px;
     }
 
     .feature-item {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
       text-align: center;
     }
 
     .feature-item .icon {
-      font-size: 40px;
-      margin-bottom: 10px;
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      background: #f3f4f6;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #667eea;
     }
 
     .feature-item h4 {
-      margin-bottom: 10px;
-      color: #667eea;
+      margin-bottom: 8px;
+      color: #1a1a1a;
+      font-weight: 600;
+      font-size: 1.1em;
+    }
+
+    .feature-item p {
+      color: #6b7280;
+      font-size: 0.9em;
+      line-height: 1.6;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 32px;
+      background: #ffffff;
+      border-top: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 0.9em;
+      margin-top: 60px;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 30px 20px;
+      }
+
+      .logo h1 {
+        font-size: 1.5em;
+      }
+
+      .content {
+        padding: 40px 20px;
+      }
+
+      .services {
+        grid-template-columns: 1fr;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>📄 Document Verification & Resize API</h1>
-      <p>Verify Indian government documents and resize images with OCR technology</p>
+  <div class="header">
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-icon">
+          <i data-lucide="shield-check" width="24" height="24"></i>
+        </div>
+        <h1>API for Document Validation & Image Tools</h1>
+      </div>
+      <p>Professional API for Indian government document verification and image processing</p>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="services">
+      <a href="/aadhar" class="service-card aadhar">
+        <div class="service-icon">
+          <i data-lucide="credit-card" width="28" height="28"></i>
+        </div>
+        <h2>Aadhar Verification</h2>
+        <p>Verify Aadhar cards with OCR and algorithmic validation</p>
+        <ul class="features">
+          <li>OCR Text Extraction</li>
+          <li>Verhoeff Checksum Validation</li>
+          <li>Document Authenticity Check</li>
+          <li>UIDAI Keyword Detection</li>
+          <li>Smart Image Resizing</li>
+        </ul>
+        <span class="btn">
+          Verify Aadhar
+          <i data-lucide="arrow-right" width="16" height="16"></i>
+        </span>
+      </a>
+
+      <a href="/pan" class="service-card pan">
+        <div class="service-icon">
+          <i data-lucide="file-text" width="28" height="28"></i>
+        </div>
+        <h2>PAN Verification</h2>
+        <p>Extract and validate PAN card format and structure</p>
+        <ul class="features">
+          <li>OCR Text Extraction</li>
+          <li>Format Validation</li>
+          <li>Structure Validation</li>
+          <li>Holder Type Detection</li>
+          <li>Smart Image Resizing</li>
+        </ul>
+        <span class="btn">
+          Verify PAN
+          <i data-lucide="arrow-right" width="16" height="16"></i>
+        </span>
+      </a>
+
+      <a href="/resize" class="service-card resize">
+        <div class="service-icon">
+          <i data-lucide="image" width="28" height="28"></i>
+        </div>
+        <h2>Image Processing</h2>
+        <p>Complete image processing and optimization suite</p>
+        <ul class="features">
+          <li>Resize (dimensions/percentage)</li>
+          <li>Crop (preset ratios)</li>
+          <li>Compress (quality control)</li>
+          <li>Convert (JPEG/PNG/WebP)</li>
+          <li>Client-side processing</li>
+        </ul>
+        <span class="btn">
+          Process Images
+          <i data-lucide="arrow-right" width="16" height="16"></i>
+        </span>
+      </a>
     </div>
 
-    <div class="content">
-      <div class="services">
-        <a href="/aadhar" class="service-card aadhar">
-          <div class="service-icon">🆔</div>
-          <h2>Aadhar Card</h2>
-          <p>Verify Aadhar cards with OCR and UIDAI validation</p>
-          <ul class="features">
-            <li>✓ OCR Text Extraction</li>
-            <li>✓ Verhoeff Checksum Validation</li>
-            <li>✓ Document Authenticity Check</li>
-            <li>✓ UIDAI Website Verification</li>
-            <li>✓ Image Resizing</li>
-          </ul>
-          <div style="margin-top: 20px;">
-            <span class="btn">Verify Aadhar →</span>
+    <div class="features-section">
+      <h3>Platform Features</h3>
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="icon">
+            <i data-lucide="scan-search" width="32" height="32"></i>
           </div>
-        </a>
-
-        <a href="/pan" class="service-card pan">
-          <div class="service-icon">💳</div>
-          <h2>PAN Card</h2>
-          <p>Extract PAN and validate format (not IT Dept verification)</p>
-          <ul class="features">
-            <li>✓ OCR Text Extraction</li>
-            <li>✓ Format Validation</li>
-            <li>✓ Structure Validation</li>
-            <li>✓ Holder Type Detection</li>
-            <li>✓ Image Resizing</li>
-          </ul>
-          <div style="margin-top: 20px;">
-            <span class="btn">Validate PAN →</span>
+          <h4>OCR Technology</h4>
+          <p>Google Cloud Vision API for accurate text extraction from documents</p>
+        </div>
+        <div class="feature-item">
+          <div class="icon">
+            <i data-lucide="shield-check" width="32" height="32"></i>
           </div>
-        </a>
-
-        <a href="/resize" class="service-card resize">
-          <div class="service-icon">🖼️</div>
-          <h2>Image Tools</h2>
-          <p>Complete image processing suite</p>
-          <ul class="features">
-            <li>✓ Resize (dimensions/percentage)</li>
-            <li>✓ Crop (preset ratios)</li>
-            <li>✓ Compress (quality control)</li>
-            <li>✓ Convert (JPEG/PNG/WebP)</li>
-            <li>✓ All processing client-side</li>
-          </ul>
-          <div style="margin-top: 20px;">
-            <span class="btn">Process Images →</span>
+          <h4>Validation</h4>
+          <p>Verhoeff algorithm for Aadhar, structure validation for PAN cards</p>
+        </div>
+        <div class="feature-item">
+          <div class="icon">
+            <i data-lucide="check-circle" width="32" height="32"></i>
           </div>
-        </a>
-      </div>
-
-      <div class="features-section">
-        <h3>🚀 Key Features</h3>
-        <div class="features-grid">
-          <div class="feature-item">
-            <div class="icon">🔍</div>
-            <h4>OCR Technology</h4>
-            <p>Google Cloud Vision API for accurate text extraction</p>
+          <h4>Authenticity Check</h4>
+          <p>Keyword detection to verify genuine government documents</p>
+        </div>
+        <div class="feature-item">
+          <div class="icon">
+            <i data-lucide="maximize" width="32" height="32"></i>
           </div>
-          <div class="feature-item">
-            <div class="icon">✅</div>
-            <h4>Validation</h4>
-            <p>Verhoeff algorithm for Aadhar, structure validation for PAN</p>
-          </div>
-          <div class="feature-item">
-            <div class="icon">🎯</div>
-            <h4>Authenticity Check</h4>
-            <p>Keyword detection to verify genuine documents</p>
-          </div>
-          <div class="feature-item">
-            <div class="icon">📐</div>
-            <h4>Smart Resizing</h4>
-            <p>Maintain quality while resizing to required dimensions</p>
-          </div>
+          <h4>Smart Resizing</h4>
+          <p>Maintain quality while resizing to required dimensions</p>
         </div>
       </div>
     </div>
-
-    <div class="footer">
-      <p>&copy; 2024 Document Verification API | Built with Flask & Google Cloud Vision</p>
-    </div>
   </div>
+
+  <div class="footer">
+    <p>&copy; 2024 API for Document Validation & Image Tools | Built with Flask & Google Cloud Vision</p>
+  </div>
+
+  <script>
+    lucide.createIcons();
+  </script>
 </body>
 
 </html>
