@@ -4,8 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Processing Tools</title>
+    <title>Image Processing - API for Document Validation</title>
     <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         * {
             margin: 0;
@@ -14,65 +18,117 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8f9fa;
             min-height: 100vh;
-            padding: 20px;
+            color: #1a1a1a;
+        }
+
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 24px 30px;
+        }
+
+        .header-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .logo h1 {
+            font-size: 1.25em;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .btn-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            background: #1a1a1a;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-home:hover {
+            background: #374151;
         }
 
         .container {
             max-width: 1100px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            margin: 40px auto;
+            padding: 0 20px;
         }
 
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
+        .page-header {
+            margin-bottom: 32px;
         }
 
-        .header h1 {
-            font-size: 28px;
+        .page-title {
+            font-size: 2em;
+            font-weight: 700;
+            color: #1a1a1a;
             margin-bottom: 8px;
-            font-weight: 600;
         }
 
-        .header p {
-            font-size: 15px;
-            opacity: 0.95;
-        }
-
-        .content {
-            padding: 40px;
+        .page-subtitle {
+            font-size: 1.05em;
+            color: #6b7280;
         }
 
         .tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #e0e0e0;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
             flex-wrap: wrap;
         }
 
         .tab {
-            padding: 15px 25px;
+            padding: 12px 20px;
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 16px;
-            color: #666;
-            border-bottom: 3px solid transparent;
+            font-size: 0.95em;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
             transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            color: #1a1a1a;
         }
 
         .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-            font-weight: 600;
+            color: #1a1a1a;
+            border-bottom-color: #1a1a1a;
         }
 
         .tab-content {
@@ -97,18 +153,19 @@
         }
 
         .upload-area {
-            border: 3px dashed #667eea;
-            border-radius: 15px;
-            padding: 60px 40px;
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 48px 32px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
-            margin-bottom: 30px;
+            background: #ffffff;
+            margin-bottom: 24px;
         }
 
         .upload-area:hover {
-            background: #f0f4ff;
-            border-color: #764ba2;
+            background: #f9fafb;
+            border-color: #9ca3af;
         }
 
         .upload-area input[type="file"] {
@@ -116,54 +173,76 @@
         }
 
         .upload-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            background: #dbeafe;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+        }
+
+        .upload-text {
+            font-size: 1em;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+
+        .upload-hint {
+            font-size: 0.85em;
+            color: #6b7280;
         }
 
         .preview-container {
             display: none;
-            margin: 30px 0;
+            margin: 24px 0;
             text-align: center;
         }
 
         .preview-image {
             max-width: 100%;
             max-height: 400px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
         }
 
         .image-info {
-            background: #f8f9fa;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 12px;
             margin: 20px 0;
             display: none;
         }
 
         .image-info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
         }
 
         .info-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
             text-align: center;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
         }
 
         .info-label {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 5px;
+            font-size: 0.8em;
+            color: #6b7280;
+            margin-bottom: 6px;
+            font-weight: 500;
         }
 
         .info-value {
-            font-size: 18px;
+            font-size: 1.1em;
             font-weight: 600;
-            color: #333;
+            color: #1a1a1a;
         }
 
         .form-group {
@@ -173,132 +252,127 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
+            color: #374151;
             font-weight: 500;
+            font-size: 0.9em;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
             border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            font-size: 1em;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            gap: 16px;
         }
 
         .btn {
-            padding: 15px 30px;
+            padding: 12px 24px;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 0.95em;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s;
             width: 100%;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             margin-top: 10px;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a1a1a;
             color: white;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            background: #374151;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
         }
 
         .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
+            background: #f3f4f6;
+            color: #1a1a1a;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
         }
 
         .result {
             margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 16px;
+            border-radius: 8px;
             display: none;
+            font-size: 0.9em;
         }
 
         .result.success {
-            background: #d4edda;
-            border: 2px solid #c3e6cb;
-            color: #155724;
+            background: #d1fae5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
         }
 
         .result.error {
-            background: #f8d7da;
-            border: 2px solid #f5c6cb;
-            color: #721c24;
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
         }
 
         .result.info {
-            background: #d1ecf1;
-            border: 2px solid #bee5eb;
-            color: #0c5460;
+            background: #dbeafe;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
         }
 
         .info-box {
-            background: #f0f4ff;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border-left: 4px solid #667eea;
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
         }
 
-        .nav-bar {
-            background: #fff;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 15px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .info-box strong {
+            color: #1e40af;
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
         }
 
-        .breadcrumb {
-            color: #666;
-            font-size: 14px;
+        .info-box p,
+        .info-box ul {
+            color: #4b5563;
+            font-size: 0.9em;
+            line-height: 1.6;
         }
 
-        .breadcrumb a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-        .btn-home {
-            background: #667eea;
-            color: white;
-            padding: 10px 24px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-home:hover {
-            background: #764ba2;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        .info-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
         }
 
         .crop-container {
@@ -310,220 +384,315 @@
 
         #cropCanvas {
             max-width: 100%;
-            border: 2px solid #667eea;
-            border-radius: 10px;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
         }
 
         .quality-slider {
             width: 100%;
             margin: 10px 0;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .quality-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #1a1a1a;
+            cursor: pointer;
+        }
+
+        .quality-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #1a1a1a;
+            cursor: pointer;
+            border: none;
         }
 
         .slider-value {
             text-align: center;
             font-weight: 600;
-            color: #667eea;
-            margin-top: 5px;
+            color: #1a1a1a;
+            margin-top: 8px;
+        }
+
+        .footer {
+            background: #ffffff;
+            border-top: 1px solid #e5e7eb;
+            padding: 24px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.85em;
+            margin-top: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .page-title {
+                font-size: 1.5em;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .image-info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Image Processing Tools</h1>
-            <p>Resize, Crop, Compress & Convert your images</p>
-        </div>
-
-        <div class="nav-bar">
-            <div class="breadcrumb">
-                <a href="/">Home</a> / Image Tools
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i data-lucide="image" width="20" height="20"></i>
+                </div>
+                <h1>Image Processing</h1>
             </div>
-            <a href="/" class="btn-home">Back to Home</a>
-        </div>
-
-        <div class="content">
-            <div class="tabs">
-                <button class="tab active" onclick="switchTab('resize')">Resize</button>
-                <button class="tab" onclick="switchTab('crop')">Crop</button>
-                <button class="tab" onclick="switchTab('compress')">Compress</button>
-                <button class="tab" onclick="switchTab('convert')">Convert</button>
-            </div>
-
-            <!-- Upload Area (shared) -->
-            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                <div style="font-size: 18px; font-weight: 500; color: #333; margin-bottom: 8px;">Click or drag to upload
-                    image</div>
-                <div style="font-size: 14px; color: #666;">Supports: JPG, PNG, JPEG, WEBP (Max 16MB)</div>
-                <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
-            </div>
-
-            <!-- Preview -->
-            <div class="preview-container" id="previewContainer">
-                <img id="previewImage" class="preview-image" alt="Preview">
-            </div>
-
-            <!-- Image Info -->
-            <div class="image-info" id="imageInfo">
-                <div class="image-info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Width</div>
-                        <div class="info-value" id="infoWidth">-</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Height</div>
-                        <div class="info-value" id="infoHeight">-</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Aspect Ratio</div>
-                        <div class="info-value" id="infoRatio">-</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">File Size</div>
-                        <div class="info-value" id="infoSize">-</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Format</div>
-                        <div class="info-value" id="infoFormat">-</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Resize Tab -->
-            <div id="resize-tab" class="tab-content active">
-                <div class="info-box">
-                    <strong>Resize Options</strong>
-                    <ul style="margin-top: 10px; margin-left: 20px;">
-                        <li>Enter width - height auto-calculates (maintains aspect ratio)</li>
-                        <li>Enter height - width auto-calculates (maintains aspect ratio)</li>
-                        <li>Enter both for exact dimensions (may distort)</li>
-                        <li>Use percentage to scale proportionally</li>
-                    </ul>
-                </div>
-
-                <div class="form-group">
-                    <label>Resize Method</label>
-                    <select id="resizeMethod">
-                        <option value="dimensions">By Dimensions (px)</option>
-                        <option value="percentage">By Percentage (%)</option>
-                    </select>
-                </div>
-
-                <div id="dimensionsInputs" class="form-grid">
-                    <div class="form-group">
-                        <label>Width (px)</label>
-                        <input type="number" id="resizeWidth" placeholder="Auto">
-                    </div>
-                    <div class="form-group">
-                        <label>Height (px)</label>
-                        <input type="number" id="resizeHeight" placeholder="Auto">
-                    </div>
-                </div>
-
-                <div id="percentageInput" class="form-group" style="display: none;">
-                    <label>Scale (%)</label>
-                    <input type="number" id="resizePercent" placeholder="e.g., 50" min="1" max="500">
-                </div>
-
-                <button class="btn btn-primary" onclick="processResize()">Resize & Download</button>
-                <div id="resizeResult" class="result"></div>
-            </div>
-
-            <!-- Crop Tab -->
-            <div id="crop-tab" class="tab-content">
-                <div class="info-box">
-                    <strong>Crop Options</strong>
-                    <p style="margin-top: 10px;">Select a preset aspect ratio or enter custom dimensions</p>
-                </div>
-
-                <div class="form-group">
-                    <label>Aspect Ratio</label>
-                    <select id="cropRatio" onchange="updateCropDimensions()">
-                        <option value="free">Free (Custom)</option>
-                        <option value="1:1">Square (1:1)</option>
-                        <option value="4:3">Standard (4:3)</option>
-                        <option value="16:9">Widescreen (16:9)</option>
-                        <option value="3:2">Photo (3:2)</option>
-                        <option value="9:16">Portrait (9:16)</option>
-                    </select>
-                </div>
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Crop Width (px)</label>
-                        <input type="number" id="cropWidth" placeholder="Auto">
-                    </div>
-                    <div class="form-group">
-                        <label>Crop Height (px)</label>
-                        <input type="number" id="cropHeight" placeholder="Auto">
-                    </div>
-                </div>
-
-                <div class="crop-container" id="cropContainer">
-                    <canvas id="cropCanvas"></canvas>
-                </div>
-
-                <button class="btn btn-primary" onclick="processCrop()">Crop & Download</button>
-                <div id="cropResult" class="result"></div>
-            </div>
-
-            <!-- Compress Tab -->
-            <div id="compress-tab" class="tab-content">
-                <div class="info-box">
-                    <strong>Compression</strong>
-                    <p style="margin-top: 10px;">Reduce file size while maintaining quality. Lower quality = smaller
-                        file size.</p>
-                </div>
-
-                <div class="form-group">
-                    <label>Quality: <span id="qualityValue">85</span>%</label>
-                    <input type="range" class="quality-slider" id="qualitySlider" min="1" max="100" value="85"
-                        oninput="document.getElementById('qualityValue').textContent = this.value">
-                </div>
-
-                <div class="form-group">
-                    <label>Target File Size (Optional)</label>
-                    <select id="targetSize">
-                        <option value="">No limit</option>
-                        <option value="100">Under 100 KB</option>
-                        <option value="200">Under 200 KB</option>
-                        <option value="500">Under 500 KB</option>
-                        <option value="1000">Under 1 MB</option>
-                    </select>
-                </div>
-
-                <button class="btn btn-primary" onclick="processCompress()">Compress & Download</button>
-                <div id="compressResult" class="result"></div>
-            </div>
-
-            <!-- Convert Tab -->
-            <div id="convert-tab" class="tab-content">
-                <div class="info-box">
-                    <strong>Format Conversion</strong>
-                    <p style="margin-top: 10px;">Convert your image to different formats</p>
-                </div>
-
-                <div class="form-group">
-                    <label>Convert To</label>
-                    <select id="convertFormat">
-                        <option value="jpeg">JPEG (.jpg)</option>
-                        <option value="png">PNG (.png)</option>
-                        <option value="webp">WebP (.webp)</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Quality: <span id="convertQualityValue">90</span>%</label>
-                    <input type="range" class="quality-slider" id="convertQualitySlider" min="1" max="100" value="90"
-                        oninput="document.getElementById('convertQualityValue').textContent = this.value">
-                </div>
-
-                <button class="btn btn-primary" onclick="processConvert()">Convert & Download</button>
-                <div id="convertResult" class="result"></div>
-            </div>
+            <a href="/" class="btn-home">
+                <i data-lucide="arrow-left" width="16" height="16"></i>
+                Back to Home
+            </a>
         </div>
     </div>
 
+    <div class="container">
+        <div class="page-header">
+            <h2 class="page-title">Image Processing Tools</h2>
+            <p class="page-subtitle">Resize, crop, compress, and convert your images with ease</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('resize')">
+                <i data-lucide="maximize-2" width="16" height="16"
+                    style="display: inline-block; vertical-align: middle;"></i>
+                Resize
+            </button>
+            <button class="tab" onclick="switchTab('crop')">
+                <i data-lucide="crop" width="16" height="16" style="display: inline-block; vertical-align: middle;"></i>
+                Crop
+            </button>
+            <button class="tab" onclick="switchTab('compress')">
+                <i data-lucide="minimize-2" width="16" height="16"
+                    style="display: inline-block; vertical-align: middle;"></i>
+                Compress
+            </button>
+            <button class="tab" onclick="switchTab('convert')">
+                <i data-lucide="repeat" width="16" height="16"
+                    style="display: inline-block; vertical-align: middle;"></i>
+                Convert
+            </button>
+        </div>
+
+        <!-- Upload Area (shared) -->
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon">
+                <i data-lucide="upload" width="32" height="32"></i>
+            </div>
+            <div class="upload-text">Click to upload image</div>
+            <div class="upload-hint">Supports: JPG, PNG, JPEG, WEBP (Max 16MB)</div>
+            <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
+        </div>
+
+        <!-- Preview -->
+        <div class="preview-container" id="previewContainer">
+            <img id="previewImage" class="preview-image" alt="Preview">
+        </div>
+
+        <!-- Image Info -->
+        <div class="image-info" id="imageInfo">
+            <div class="image-info-grid">
+                <div class="info-item">
+                    <div class="info-label">Width</div>
+                    <div class="info-value" id="infoWidth">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Height</div>
+                    <div class="info-value" id="infoHeight">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Aspect Ratio</div>
+                    <div class="info-value" id="infoRatio">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">File Size</div>
+                    <div class="info-value" id="infoSize">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Format</div>
+                    <div class="info-value" id="infoFormat">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resize Tab -->
+        <div id="resize-tab" class="tab-content active">
+            <div class="info-box">
+                <strong>Resize Options</strong>
+                <ul>
+                    <li>Enter width - height auto-calculates (maintains aspect ratio)</li>
+                    <li>Enter height - width auto-calculates (maintains aspect ratio)</li>
+                    <li>Enter both for exact dimensions (may distort)</li>
+                    <li>Use percentage to scale proportionally</li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label>Resize Method</label>
+                <select id="resizeMethod">
+                    <option value="dimensions">By Dimensions (px)</option>
+                    <option value="percentage">By Percentage (%)</option>
+                </select>
+            </div>
+
+            <div id="dimensionsInputs" class="form-grid">
+                <div class="form-group">
+                    <label>Width (px)</label>
+                    <input type="number" id="resizeWidth" placeholder="Auto">
+                </div>
+                <div class="form-group">
+                    <label>Height (px)</label>
+                    <input type="number" id="resizeHeight" placeholder="Auto">
+                </div>
+            </div>
+
+            <div id="percentageInput" class="form-group" style="display: none;">
+                <label>Scale (%)</label>
+                <input type="number" id="resizePercent" placeholder="e.g., 50" min="1" max="500">
+            </div>
+
+            <button class="btn btn-primary" onclick="processResize()">
+                <i data-lucide="download" width="18" height="18"></i>
+                Resize & Download
+            </button>
+            <div id="resizeResult" class="result"></div>
+        </div>
+
+        <!-- Crop Tab -->
+        <div id="crop-tab" class="tab-content">
+            <div class="info-box">
+                <strong>Crop Options</strong>
+                <p>Select a preset aspect ratio or enter custom dimensions</p>
+            </div>
+
+            <div class="form-group">
+                <label>Aspect Ratio</label>
+                <select id="cropRatio" onchange="updateCropDimensions()">
+                    <option value="free">Free (Custom)</option>
+                    <option value="1:1">Square (1:1)</option>
+                    <option value="4:3">Standard (4:3)</option>
+                    <option value="16:9">Widescreen (16:9)</option>
+                    <option value="3:2">Photo (3:2)</option>
+                    <option value="9:16">Portrait (9:16)</option>
+                </select>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Crop Width (px)</label>
+                    <input type="number" id="cropWidth" placeholder="Auto">
+                </div>
+                <div class="form-group">
+                    <label>Crop Height (px)</label>
+                    <input type="number" id="cropHeight" placeholder="Auto">
+                </div>
+            </div>
+
+            <div class="crop-container" id="cropContainer">
+                <canvas id="cropCanvas"></canvas>
+            </div>
+
+            <button class="btn btn-primary" onclick="processCrop()">
+                <i data-lucide="download" width="18" height="18"></i>
+                Crop & Download
+            </button>
+            <div id="cropResult" class="result"></div>
+        </div>
+
+        <!-- Compress Tab -->
+        <div id="compress-tab" class="tab-content">
+            <div class="info-box">
+                <strong>Compression</strong>
+                <p>Reduce file size while maintaining quality. Lower quality = smaller file size.</p>
+            </div>
+
+            <div class="form-group">
+                <label>Quality: <span id="qualityValue">85</span>%</label>
+                <input type="range" class="quality-slider" id="qualitySlider" min="1" max="100" value="85"
+                    oninput="document.getElementById('qualityValue').textContent = this.value">
+            </div>
+
+            <div class="form-group">
+                <label>Target File Size (Optional)</label>
+                <select id="targetSize">
+                    <option value="">No limit</option>
+                    <option value="100">Under 100 KB</option>
+                    <option value="200">Under 200 KB</option>
+                    <option value="500">Under 500 KB</option>
+                    <option value="1000">Under 1 MB</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary" onclick="processCompress()">
+                <i data-lucide="download" width="18" height="18"></i>
+                Compress & Download
+            </button>
+            <div id="compressResult" class="result"></div>
+        </div>
+
+        <!-- Convert Tab -->
+        <div id="convert-tab" class="tab-content">
+            <div class="info-box">
+                <strong>Format Conversion</strong>
+                <p>Convert your image to different formats</p>
+            </div>
+
+            <div class="form-group">
+                <label>Convert To</label>
+                <select id="convertFormat">
+                    <option value="jpeg">JPEG (.jpg)</option>
+                    <option value="png">PNG (.png)</option>
+                    <option value="webp">WebP (.webp)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Quality: <span id="convertQualityValue">90</span>%</label>
+                <input type="range" class="quality-slider" id="convertQualitySlider" min="1" max="100" value="90"
+                    oninput="document.getElementById('convertQualityValue').textContent = this.value">
+            </div>
+
+            <button class="btn btn-primary" onclick="processConvert()">
+                <i data-lucide="download" width="18" height="18"></i>
+                Convert & Download
+            </button>
+            <div id="convertResult" class="result"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 API for Document Validation & Image Tools | Image Processing System</p>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
     <script src="/static/js/imagetools.js"></script>
 </body>
 
