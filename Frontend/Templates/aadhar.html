@@ -4,8 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aadhar Card Verification - UIDAI</title>
+    <title>Aadhar Verification - API for Document Validation</title>
     <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         * {
             margin: 0;
@@ -14,161 +18,179 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8f9fa;
             min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            color: #1a1a1a;
         }
 
         .header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            padding: 40px;
-            position: relative;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 24px 30px;
         }
 
         .header-content {
-            max-width: 800px;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .header p {
-            opacity: 0.95;
-            font-size: 15px;
-        }
-
-        .nav-bar {
-            background: #fff;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 15px 40px;
+            max-width: 900px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .breadcrumb {
-            color: #666;
-            font-size: 14px;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .breadcrumb a {
-            color: #1e3c72;
-            text-decoration: none;
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
         }
 
-        .breadcrumb a:hover {
-            text-decoration: underline;
+        .logo h1 {
+            font-size: 1.25em;
+            font-weight: 600;
+            color: #1a1a1a;
         }
 
         .btn-home {
-            background: #1e3c72;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            background: #1a1a1a;
             color: white;
-            padding: 10px 24px;
             border-radius: 6px;
             text-decoration: none;
-            font-size: 14px;
+            font-size: 0.9em;
             font-weight: 500;
             transition: all 0.3s;
-            border: none;
-            cursor: pointer;
         }
 
         .btn-home:hover {
-            background: #2a5298;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(30, 60, 114, 0.3);
+            background: #374151;
         }
 
-        .content {
-            padding: 40px;
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 2em;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 1.05em;
+            color: #6b7280;
         }
 
         .info-banner {
-            background: #e8f4fd;
-            border-left: 4px solid #1e3c72;
+            background: #ede9fe;
+            border-left: 4px solid #7c3aed;
             padding: 16px 20px;
-            margin-bottom: 30px;
-            border-radius: 4px;
+            margin-bottom: 32px;
+            border-radius: 8px;
         }
 
         .info-banner strong {
-            color: #1e3c72;
+            color: #7c3aed;
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
+            font-weight: 600;
         }
 
         .info-banner p {
-            color: #555;
-            font-size: 14px;
+            color: #4b5563;
+            font-size: 0.9em;
             line-height: 1.6;
         }
 
-        .section {
-            margin-bottom: 35px;
+        .card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
         }
 
         .section-title {
-            font-size: 18px;
+            font-size: 1.25em;
             font-weight: 600;
-            color: #333;
+            color: #1a1a1a;
             margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .upload-area {
-            border: 2px dashed #1e3c72;
-            border-radius: 8px;
-            padding: 50px 40px;
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 48px 32px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
-            background: #f8fbff;
+            background: #f9fafb;
         }
 
         .upload-area:hover {
-            background: #e8f4fd;
-            border-color: #2a5298;
+            background: #f3f4f6;
+            border-color: #9ca3af;
         }
 
         .upload-area input[type="file"] {
             display: none;
         }
 
+        .upload-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            background: #ede9fe;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7c3aed;
+        }
+
         .upload-text {
-            font-size: 16px;
+            font-size: 1em;
             font-weight: 500;
-            color: #333;
-            margin-bottom: 8px;
+            color: #1a1a1a;
+            margin-bottom: 6px;
         }
 
         .upload-hint {
-            font-size: 13px;
-            color: #666;
+            font-size: 0.85em;
+            color: #6b7280;
         }
 
         .preview-image {
             max-width: 100%;
-            max-height: 350px;
-            margin: 25px 0;
+            max-height: 400px;
+            margin: 24px auto;
             border-radius: 8px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #e5e7eb;
             display: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
         .form-group {
@@ -178,46 +200,52 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
+            color: #374151;
             font-weight: 500;
-            font-size: 14px;
+            font-size: 0.9em;
         }
 
         .form-group input {
             width: 100%;
             padding: 12px 16px;
-            border: 1px solid #d0d0d0;
-            border-radius: 6px;
-            font-size: 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1em;
             transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #1e3c72;
-            box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
         }
 
         .btn {
-            padding: 14px 32px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 6px;
-            font-size: 15px;
-            font-weight: 600;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s;
             width: 100%;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .btn-primary {
-            background: #1e3c72;
+            background: #1a1a1a;
             color: white;
         }
 
         .btn-primary:hover {
-            background: #2a5298;
+            background: #374151;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(30, 60, 114, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .btn-primary:active {
@@ -226,10 +254,10 @@
 
         .divider {
             text-align: center;
-            margin: 35px 0;
-            color: #999;
+            margin: 32px 0;
+            color: #9ca3af;
             position: relative;
-            font-size: 14px;
+            font-size: 0.85em;
             font-weight: 500;
         }
 
@@ -240,7 +268,7 @@
             top: 50%;
             width: 45%;
             height: 1px;
-            background: #e0e0e0;
+            background: #e5e7eb;
         }
 
         .divider::before {
@@ -252,159 +280,188 @@
         }
 
         .result {
-            margin-top: 25px;
+            margin-top: 24px;
             padding: 20px;
-            border-radius: 6px;
+            border-radius: 8px;
             display: none;
         }
 
         .result.success {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
+            background: #d1fae5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
         }
 
         .result.error {
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
-            color: #721c24;
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
         }
 
         .result.info {
-            background: #d1ecf1;
-            border: 1px solid #bee5eb;
-            color: #0c5460;
+            background: #dbeafe;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
         }
 
         .result-title {
             font-weight: 600;
-            font-size: 17px;
+            font-size: 1.05em;
             margin-bottom: 12px;
         }
 
         .result-details {
-            margin-top: 15px;
-            background: rgba(255, 255, 255, 0.6);
+            margin-top: 16px;
+            background: rgba(255, 255, 255, 0.5);
             padding: 16px;
-            border-radius: 4px;
+            border-radius: 6px;
         }
 
         .result-details div {
             margin: 10px 0;
-            font-size: 14px;
+            font-size: 0.9em;
         }
 
         .confidence-bar {
             width: 100%;
-            height: 10px;
+            height: 8px;
             background: rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
+            border-radius: 4px;
             overflow: hidden;
             margin-top: 12px;
         }
 
         .confidence-fill {
             height: 100%;
-            background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+            background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
             transition: width 0.5s;
         }
 
         .note {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
+            background: #fef3c7;
+            border: 1px solid #fde68a;
             padding: 14px 16px;
-            border-radius: 6px;
+            border-radius: 8px;
             margin-top: 16px;
-            font-size: 13px;
-            color: #856404;
+            font-size: 0.85em;
+            color: #92400e;
         }
 
         .note strong {
-            color: #664d03;
+            color: #78350f;
         }
 
         .footer {
-            background: #f8f9fa;
-            padding: 25px 40px;
+            background: #ffffff;
+            border-top: 1px solid #e5e7eb;
+            padding: 24px;
             text-align: center;
-            color: #666;
-            font-size: 13px;
-            border-top: 1px solid #e0e0e0;
+            color: #6b7280;
+            font-size: 0.85em;
+            margin-top: 60px;
         }
 
-        .footer p {
-            margin: 5px 0;
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .page-title {
+                font-size: 1.5em;
+            }
+
+            .card {
+                padding: 24px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="header-content">
-                <h1>Aadhar Card Verification System</h1>
-                <p>Unique Identification Authority of India (UIDAI)</p>
-            </div>
-        </div>
-
-        <div class="nav-bar">
-            <div class="breadcrumb">
-                <a href="/">Home</a> / Aadhar Verification
-            </div>
-            <a href="/" class="btn-home">Back to Home</a>
-        </div>
-
-        <div class="content">
-            <div class="info-banner">
-                <strong>Verification Process</strong>
-                <p>This system uses OCR technology and Verhoeff checksum algorithm to validate Aadhar cards. All
-                    processing is secure and no data is stored on our servers.</p>
-            </div>
-
-            <!-- Image Upload Section -->
-            <div class="section">
-                <div class="section-title">Verify by Image Upload</div>
-                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                    <div class="upload-text">Click to upload Aadhar card image</div>
-                    <div class="upload-hint">Supports: JPG, PNG, JPEG (Maximum 16MB)</div>
-                    <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i data-lucide="shield-check" width="20" height="20"></i>
                 </div>
-                <img id="previewImage" class="preview-image" alt="Preview">
-
-                <button class="btn btn-primary" onclick="verifyAadhar()" style="margin-top: 20px;">
-                    Verify Aadhar Card
-                </button>
-
-                <div class="note">
-                    <strong>Note:</strong> Image verification requires Google Cloud Vision API credentials to be
-                    configured. Ensure credentials are properly set up before using this feature.
-                </div>
+                <h1>Aadhar Verification</h1>
             </div>
-
-            <div class="divider">OR</div>
-
-            <!-- Number Input Section -->
-            <div class="section">
-                <div class="section-title">Verify by Aadhar Number</div>
-                <div class="form-group">
-                    <label for="aadharNumber">Enter 12-digit Aadhar Number</label>
-                    <input type="text" id="aadharNumber" placeholder="XXXX XXXX XXXX" maxlength="14">
-                </div>
-                <button class="btn btn-primary" onclick="verifyAadharNumber()">
-                    Verify Number
-                </button>
-            </div>
-
-            <div id="result" class="result"></div>
-        </div>
-
-        <div class="footer">
-            <p>&copy; 2024 Aadhar Verification System | For authorized use only</p>
-            <p>This is an unofficial verification tool using public algorithms</p>
+            <a href="/" class="btn-home">
+                <i data-lucide="arrow-left" width="16" height="16"></i>
+                Back to Home
+            </a>
         </div>
     </div>
 
+    <div class="container">
+        <div class="page-header">
+            <h2 class="page-title">Aadhar Card Verification</h2>
+            <p class="page-subtitle">Verify Aadhar cards using OCR and Verhoeff checksum algorithm</p>
+        </div>
+
+        <div class="info-banner">
+            <strong>How It Works</strong>
+            <p>This system uses Google Cloud Vision API for OCR text extraction and validates using the official
+                Verhoeff checksum algorithm. All processing is secure and no data is stored.</p>
+        </div>
+
+        <!-- Image Upload Section -->
+        <div class="card">
+            <div class="section-title">
+                <i data-lucide="upload" width="20" height="20"></i>
+                Verify by Image Upload
+            </div>
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">
+                    <i data-lucide="image-plus" width="32" height="32"></i>
+                </div>
+                <div class="upload-text">Click to upload Aadhar card image</div>
+                <div class="upload-hint">Supports: JPG, PNG, JPEG (Maximum 16MB)</div>
+                <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
+            </div>
+            <img id="previewImage" class="preview-image" alt="Preview">
+
+            <button class="btn btn-primary" onclick="verifyAadhar()" style="margin-top: 20px;">
+                <i data-lucide="check-circle" width="18" height="18"></i>
+                Verify Aadhar Card
+            </button>
+
+            <div class="note">
+                <strong>Note:</strong> Image verification requires Google Cloud Vision API credentials. Ensure
+                credentials are properly configured before using this feature.
+            </div>
+        </div>
+
+        <div class="divider">OR</div>
+
+        <!-- Number Input Section -->
+        <div class="card">
+            <div class="section-title">
+                <i data-lucide="hash" width="20" height="20"></i>
+                Verify by Aadhar Number
+            </div>
+            <div class="form-group">
+                <label for="aadharNumber">Enter 12-digit Aadhar Number</label>
+                <input type="text" id="aadharNumber" placeholder="XXXX XXXX XXXX" maxlength="14">
+            </div>
+            <button class="btn btn-primary" onclick="verifyAadharNumber()">
+                <i data-lucide="check-circle" width="18" height="18"></i>
+                Verify Number
+            </button>
+        </div>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 API for Document Validation & Image Tools | Aadhar Verification System</p>
+    </div>
+
     <script>
+        lucide.createIcons();
+
         let uploadedFile = null;
 
         function handleFileSelect(event) {
@@ -439,7 +496,7 @@
                 .then(result => {
                     if (result.valid) {
                         const details = `
-                        <div class="result-title">Valid Aadhar Card</div>
+                        <div class="result-title">✓ Valid Aadhar Card</div>
                         <div class="result-details">
                             <div><strong>Aadhar Number:</strong> ${result.number}</div>
                             <div><strong>Confidence Score:</strong> ${result.confidence}%</div>
@@ -480,7 +537,7 @@
                 .then(result => {
                     if (result.valid) {
                         const details = `
-                        <div class="result-title">Valid Aadhar Number</div>
+                        <div class="result-title">✓ Valid Aadhar Number</div>
                         <div class="result-details">
                             <div><strong>Formatted Number:</strong> ${result.number}</div>
                             <div><strong>Confidence Score:</strong> ${result.confidence}%</div>
@@ -510,6 +567,11 @@
             }
             resultDiv.className = `result ${type}`;
             resultDiv.style.display = 'block';
+
+            // Re-initialize icons after HTML update
+            if (isHTML) {
+                lucide.createIcons();
+            }
         }
 
         // Format Aadhar number input
